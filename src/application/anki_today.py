@@ -2,64 +2,50 @@
 
 from ..integration import AnkiConnectClient
 from ..domain import Query, AnkiTodayService
+from ..domain.presenter import ReviewPresenter
+from .console_presenter import ConsolePresenter
 
 class AnkiToday:
-    def __init__(self, service: AnkiTodayService):
+    def __init__(self, service: AnkiTodayService, presenter: ReviewPresenter):
         self.service = service
+        self.presenter = presenter
 
     def get_today_reviews(self) -> None:
         """Display all cards that need to be reviewed today."""
         today_review = self.service.get_cards()
         
         if not today_review.decks:
-            print("\nNo cards to review today!")
+            self.presenter.show_no_cards()
             return
         
-        print("\nDecks found:", [deck.deck_name for deck in today_review.decks])
-        print("\nCards due today by deck:")
-        print("-" * 50)
+        self.presenter.show_deck_list([deck.deck_name for deck in today_review.decks])
         
         for deck in today_review.decks:
-            print(f"\n{deck.deck_name}:")
-            
-            if deck.new_cards:
-                print("  New cards:")
-                for q in deck.new_cards:
-                    print(f"    - {q}")
-            
-            if deck.learning_cards:
-                print("  Learning cards:")
-                for q in deck.learning_cards:
-                    print(f"    - {q}")
-            
-            if deck.review_cards:
-                print("  Review cards:")
-                for q in deck.review_cards:
-                    print(f"    - {q}")
-            
-            print(f"  Total in deck: {deck.total_cards}")
+            self.presenter.show_deck_cards(
+                deck_name=deck.deck_name,
+                new_cards=deck.new_cards,
+                learning_cards=deck.learning_cards,
+                review_cards=deck.review_cards,
+                total=deck.total_cards
+            )
         
-        print("\n" + "-" * 50)
-        print(f"Total cards to review: {today_review.total_cards}")
+        self.presenter.show_total_cards(today_review.total_cards)
 
 def main():
     # Set up dependencies
     client = AnkiConnectClient()
     query = Query(client)
     service = AnkiTodayService(query)
-    anki = AnkiToday(service)
+    presenter = ConsolePresenter()
+    anki = AnkiToday(service, presenter)
     
     # Check if Anki is running and accessible
     version = client.test_connection()
     if version is None:
-        print("Error: Could not connect to Anki.")
-        print("Please make sure that:")
-        print("1. Anki is running")
-        print("2. AnkiConnect add-on is installed")
-        print("3. No firewall is blocking the connection")
+        presenter.show_connection_error()
         return
     
-    print(f"Connected to AnkiConnect v{version}")
+    presenter.show_connection_success(version)
     anki.get_today_reviews()
 
 if __name__ == "__main__":
