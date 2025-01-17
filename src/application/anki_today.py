@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from .integration import AnkiConnectClient
-from .domain import Query, AnkiTodayService
+from ..integration import AnkiConnectClient
+from ..domain import Query, AnkiTodayService
 
 class AnkiToday:
     def __init__(self, service: AnkiTodayService):
