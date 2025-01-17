@@ -2,29 +2,12 @@
 
 from typing import List, Dict, Any, Optional
 from .api_client import ApiClient
+from .query import Query
 
 class AnkiToday:
     def __init__(self, client: ApiClient):
         self.client = client
-
-    def get_deck_names(self) -> Optional[List[str]]:
-        """Get a list of parent deck names from Anki."""
-        decks = self.client.invoke('deckNames')
-        if decks.get('error'):
-            print(f"Error: {decks['error']}")
-            return None
-        
-        # Filter out sub-decks by keeping only decks without "::"
-        parent_decks = [deck for deck in decks['result'] if "::" not in deck]
-        return parent_decks
-
-    def get_card_info(self, card_ids: List[int]) -> List[Dict[str, Any]]:
-        """Get detailed information about specific cards."""
-        result = self.client.invoke('cardsInfo', cards=card_ids)
-        if result.get('error'):
-            print(f"Error getting card info: {result['error']}")
-            return []
-        return result['result']
+        self.query = Query(client)
 
     @staticmethod
     def get_first_field_value(card: Dict[str, Any]) -> str:
@@ -37,7 +20,7 @@ class AnkiToday:
 
     def get_today_reviews(self) -> None:
         # Get all deck names first
-        decks = self.get_deck_names()
+        decks = self.query.get_deck_names()
         if decks is None:
             return
         
@@ -49,18 +32,11 @@ class AnkiToday:
         
         for deck in decks:
             # Find cards due today in this deck
-            query = f'deck:"{deck}" (is:due or is:new)'
-            result = self.client.invoke('findCards', query=query)
-            
-            if result.get('error'):
-                print(f"Error finding cards in {deck}: {result['error']}")
-                continue
-                
-            card_ids = result['result']
+            card_ids = self.query.find_cards_due_today(deck)
             if not card_ids:
                 continue
                 
-            cards_info = self.get_card_info(card_ids)
+            cards_info = self.query.get_card_info(card_ids)
             if not cards_info:
                 continue
                 
