@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
 from .api_client import ApiClient
-from .query import Query
-from .domain import AnkiTodayService
+from .domain import Query, AnkiTodayService
 
 class AnkiToday:
     def __init__(self, client: ApiClient):

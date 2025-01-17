@@ -1,5 +1,5 @@
 from typing import List, Dict, Any, Optional
-from .api_client import ApiClient
+from ..api_client import ApiClient
 
 class Query:
     def __init__(self, client: ApiClient):
