@@ -2,7 +2,7 @@
 
 from .api_client import ApiClient
 from .query import Query
-from .service import AnkiTodayService
+from .domain import AnkiTodayService
 
 class AnkiToday:
     def __init__(self, client: ApiClient):
