@@ -1,8 +1,11 @@
 import json
 import requests
-from typing import Any, Dict, Optional
+from typing import Dict, Any, Optional
+from ..domain.port import AnkiConnectPort
 
-class ApiClient:
+class AnkiConnectClient(AnkiConnectPort):
+    """Implementation of AnkiConnectPort using HTTP requests."""
+    
     def __init__(self, host: str = "localhost", port: int = 8765):
         self.host = host
         self.port = port

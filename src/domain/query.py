@@ -1,8 +1,8 @@
 from typing import List, Dict, Any, Optional
-from ..api_client import ApiClient
+from .port import AnkiConnectPort
 
 class Query:
-    def __init__(self, client: ApiClient):
+    def __init__(self, client: AnkiConnectPort):
         self.client = client
 
     def get_deck_names(self) -> Optional[List[str]]:

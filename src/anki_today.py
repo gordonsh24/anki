@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from .api_client import ApiClient
+from .integration import AnkiConnectClient
 from .domain import Query, AnkiTodayService
 
 class AnkiToday:
@@ -44,7 +44,7 @@ class AnkiToday:
 
 def main():
     # Set up dependencies
-    client = ApiClient()
+    client = AnkiConnectClient()
     query = Query(client)
     service = AnkiTodayService(query)
     anki = AnkiToday(service)
