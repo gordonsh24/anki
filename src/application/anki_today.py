@@ -27,25 +27,4 @@ class AnkiToday:
                 total=deck.total_cards
             )
         
-        self.presenter.show_total_cards(today_review.total_cards)
-
-def main():
-    from .container import Container
-    
-    # Create and configure the container
-    container = Container()
-    
-    # Get the application instance
-    anki = container.anki_today()
-    
-    # Check if Anki is running and accessible
-    version = container.anki_client().test_connection()
-    if version is None:
-        container.presenter().show_connection_error()
-        return
-    
-    container.presenter().show_connection_success(version)
-    anki.get_today_reviews()
-
-if __name__ == "__main__":
-    main() 
+        self.presenter.show_total_cards(today_review.total_cards) 
