@@ -4,9 +4,8 @@ from .api_client import ApiClient
 from .domain import Query, AnkiTodayService
 
 class AnkiToday:
-    def __init__(self, client: ApiClient):
-        self.query = Query(client)
-        self.service = AnkiTodayService(self.query)
+    def __init__(self, service: AnkiTodayService):
+        self.service = service
 
     def get_today_reviews(self) -> None:
         """Display all cards that need to be reviewed today."""
@@ -44,8 +43,11 @@ class AnkiToday:
         print(f"Total cards to review: {today_review.total_cards}")
 
 def main():
+    # Set up dependencies
     client = ApiClient()
-    anki = AnkiToday(client)
+    query = Query(client)
+    service = AnkiTodayService(query)
+    anki = AnkiToday(service)
     
     # Check if Anki is running and accessible
     version = client.test_connection()
