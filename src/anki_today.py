@@ -1,82 +1,48 @@
 #!/usr/bin/env python3
 
-from typing import List, Dict, Any, Optional
 from .api_client import ApiClient
 from .query import Query
+from .service import AnkiTodayService
 
 class AnkiToday:
     def __init__(self, client: ApiClient):
-        self.client = client
         self.query = Query(client)
-
-    @staticmethod
-    def get_first_field_value(card: Dict[str, Any]) -> str:
-        """Get the value of the first field in the card, regardless of its name."""
-        if not card['fields']:
-            return "Empty card"
-        # Get the first field's value
-        first_field = next(iter(card['fields'].values()))
-        return first_field['value']
+        self.service = AnkiTodayService(self.query)
 
     def get_today_reviews(self) -> None:
-        # Get all deck names first
-        decks = self.query.get_deck_names()
-        if decks is None:
+        """Display all cards that need to be reviewed today."""
+        today_review = self.service.get_cards()
+        
+        if not today_review.decks:
+            print("\nNo cards to review today!")
             return
         
-        print("\nDecks found:", decks)
+        print("\nDecks found:", [deck.deck_name for deck in today_review.decks])
         print("\nCards due today by deck:")
         print("-" * 50)
         
-        total_cards = 0
-        
-        for deck in decks:
-            # Find cards due today in this deck
-            card_ids = self.query.find_cards_due_today(deck)
-            if not card_ids:
-                continue
-                
-            cards_info = self.query.get_card_info(card_ids)
-            if not cards_info:
-                continue
-                
-            print(f"\n{deck}:")
+        for deck in today_review.decks:
+            print(f"\n{deck.deck_name}:")
             
-            # Group cards by type
-            new_cards = []
-            review_cards = []
-            learning_cards = []
-            
-            for card in cards_info:
-                question = self.get_first_field_value(card)
-                if card['type'] == 0:  # New card
-                    new_cards.append(question)
-                elif card['type'] == 1:  # Learning card
-                    learning_cards.append(question)
-                elif card['type'] == 2:  # Review card
-                    review_cards.append(question)
-            
-            if new_cards:
+            if deck.new_cards:
                 print("  New cards:")
-                for q in new_cards:
+                for q in deck.new_cards:
                     print(f"    - {q}")
             
-            if learning_cards:
+            if deck.learning_cards:
                 print("  Learning cards:")
-                for q in learning_cards:
+                for q in deck.learning_cards:
                     print(f"    - {q}")
             
-            if review_cards:
+            if deck.review_cards:
                 print("  Review cards:")
-                for q in review_cards:
+                for q in deck.review_cards:
                     print(f"    - {q}")
             
-            deck_total = len(new_cards) + len(learning_cards) + len(review_cards)
-            total_cards += deck_total
-            print(f"  Total in deck: {deck_total}")
+            print(f"  Total in deck: {deck.total_cards}")
         
         print("\n" + "-" * 50)
-        print(f"Total cards to review: {total_cards}")
+        print(f"Total cards to review: {today_review.total_cards}")
 
 def main():
     client = ApiClient()
