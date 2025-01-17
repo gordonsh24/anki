@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
-from ..integration import AnkiConnectClient
-from ..domain import Query, AnkiTodayService
+from ..domain import AnkiTodayService
 from ..domain.presenter import ReviewPresenter
-from .console_presenter import ConsolePresenter
 
 class AnkiToday:
     def __init__(self, service: AnkiTodayService, presenter: ReviewPresenter):
@@ -32,20 +30,21 @@ class AnkiToday:
         self.presenter.show_total_cards(today_review.total_cards)
 
 def main():
-    # Set up dependencies
-    client = AnkiConnectClient()
-    query = Query(client)
-    service = AnkiTodayService(query)
-    presenter = ConsolePresenter()
-    anki = AnkiToday(service, presenter)
+    from .container import Container
+    
+    # Create and configure the container
+    container = Container()
+    
+    # Get the application instance
+    anki = container.anki_today()
     
     # Check if Anki is running and accessible
-    version = client.test_connection()
+    version = container.anki_client().test_connection()
     if version is None:
-        presenter.show_connection_error()
+        container.presenter().show_connection_error()
         return
     
-    presenter.show_connection_success(version)
+    container.presenter().show_connection_success(version)
     anki.get_today_reviews()
 
 if __name__ == "__main__":
