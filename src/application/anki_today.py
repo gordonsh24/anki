@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from ..domain import AnkiTodayService
-from ..domain.presenter import ReviewPresenter
+from ..core.ports import ReviewPresenter
 
 class AnkiToday:
     def __init__(self, service: AnkiTodayService, presenter: ReviewPresenter):

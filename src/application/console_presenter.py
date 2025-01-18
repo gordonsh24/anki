@@ -1,5 +1,5 @@
 from typing import Dict, Any
-from ..domain.presenter import ReviewPresenter
+from ..core.ports import ReviewPresenter
 from ..core.entities import TodayReview
 
 class ConsolePresenter(ReviewPresenter):
