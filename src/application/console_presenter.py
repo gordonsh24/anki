@@ -1,48 +1,36 @@
+from typing import Dict, Any
 from ..domain.presenter import ReviewPresenter
+from ..core.entities import TodayReview
 
 class ConsolePresenter(ReviewPresenter):
-    """Console-based implementation of ReviewPresenter."""
-    
-    def show_no_cards(self) -> None:
-        print("\nNo cards to review today!")
-    
-    def show_deck_list(self, deck_names: list[str]) -> None:
-        print("\nDecks found:", deck_names)
-        print("\nCards due today by deck:")
-        print("-" * 50)
-    
-    def show_deck_cards(self, deck_name: str, new_cards: list[str], 
-                       learning_cards: list[str], review_cards: list[str], 
-                       total: int) -> None:
-        print(f"\n{deck_name}:")
-        
-        if new_cards:
-            print("  New cards:")
-            for q in new_cards:
-                print(f"    - {q}")
-        
-        if learning_cards:
-            print("  Learning cards:")
-            for q in learning_cards:
-                print(f"    - {q}")
-        
-        if review_cards:
-            print("  Review cards:")
-            for q in review_cards:
-                print(f"    - {q}")
-        
-        print(f"  Total in deck: {total}")
-    
-    def show_total_cards(self, total: int) -> None:
-        print("\n" + "-" * 50)
-        print(f"Total cards to review: {total}")
-    
-    def show_connection_error(self) -> None:
-        print("Error: Could not connect to Anki.")
-        print("Please make sure that:")
-        print("1. Anki is running")
-        print("2. AnkiConnect add-on is installed")
-        print("3. No firewall is blocking the connection")
-    
-    def show_connection_success(self, version: str) -> None:
-        print(f"Connected to AnkiConnect v{version}") 
+    """Console implementation of the review presenter."""
+
+    def present(self, review: TodayReview) -> Dict[str, Any]:
+        """Present the review data in a format suitable for console display."""
+        if not review.decks:
+            return {
+                "total_cards": 0,
+                "message": "No cards to review today!"
+            }
+
+        deck_messages = []
+        for deck in review.decks:
+            deck_message = f"\n{deck.deck_name}:"
+            if deck.new_cards:
+                deck_message += f"\n  New cards ({len(deck.new_cards)}):"
+                for card in deck.new_cards:
+                    deck_message += f"\n    - {card}"
+            if deck.learning_cards:
+                deck_message += f"\n  Learning cards ({len(deck.learning_cards)}):"
+                for card in deck.learning_cards:
+                    deck_message += f"\n    - {card}"
+            if deck.review_cards:
+                deck_message += f"\n  Review cards ({len(deck.review_cards)}):"
+                for card in deck.review_cards:
+                    deck_message += f"\n    - {card}"
+            deck_messages.append(deck_message)
+
+        return {
+            "total_cards": review.total_cards,
+            "message": "\n".join(deck_messages)
+        } 

@@ -1,37 +1,36 @@
-from abc import ABC, abstractmethod
-from .models import TodayReview
+from typing import Dict, Any
+from ..core.entities import TodayReview
 
-class ReviewPresenter(ABC):
-    """Interface for presenting review information."""
-    
-    @abstractmethod
-    def show_no_cards(self) -> None:
-        """Display message when there are no cards to review."""
-        pass
-    
-    @abstractmethod
-    def show_deck_list(self, deck_names: list[str]) -> None:
-        """Display list of decks."""
-        pass
-    
-    @abstractmethod
-    def show_deck_cards(self, deck_name: str, new_cards: list[str], 
-                       learning_cards: list[str], review_cards: list[str], 
-                       total: int) -> None:
-        """Display cards in a deck."""
-        pass
-    
-    @abstractmethod
-    def show_total_cards(self, total: int) -> None:
-        """Display total number of cards."""
-        pass
-    
-    @abstractmethod
-    def show_connection_error(self) -> None:
-        """Display connection error message."""
-        pass
-    
-    @abstractmethod
-    def show_connection_success(self, version: str) -> None:
-        """Display successful connection message."""
-        pass 
+class ReviewPresenter:
+    """Presenter for formatting review data."""
+
+    @staticmethod
+    def present(review: TodayReview) -> Dict[str, Any]:
+        """Present the review data in a format suitable for display."""
+        if not review.decks:
+            return {
+                "total_cards": 0,
+                "message": "No cards to review today!"
+            }
+
+        deck_messages = []
+        for deck in review.decks:
+            deck_message = f"\n{deck.deck_name}:"
+            if deck.new_cards:
+                deck_message += f"\n  New cards ({len(deck.new_cards)}):"
+                for card in deck.new_cards:
+                    deck_message += f"\n    - {card}"
+            if deck.learning_cards:
+                deck_message += f"\n  Learning cards ({len(deck.learning_cards)}):"
+                for card in deck.learning_cards:
+                    deck_message += f"\n    - {card}"
+            if deck.review_cards:
+                deck_message += f"\n  Review cards ({len(deck.review_cards)}):"
+                for card in deck.review_cards:
+                    deck_message += f"\n    - {card}"
+            deck_messages.append(deck_message)
+
+        return {
+            "total_cards": review.total_cards,
+            "message": "\n".join(deck_messages)
+        } 

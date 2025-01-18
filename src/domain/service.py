@@ -1,6 +1,6 @@
 from typing import Dict, Any
 from .query import Query
-from .models import DeckCards, TodayReview
+from ..core.entities import DeckCards, TodayReview
 
 class AnkiTodayService:
     def __init__(self, query: Query):
@@ -9,11 +9,28 @@ class AnkiTodayService:
     @staticmethod
     def get_first_field_value(card: Dict[str, Any]) -> str:
         """Get the value of the first field in the card, regardless of its name."""
-        if not card['fields']:
+        if not card.get('fields'):
             return "Empty card"
         # Get the first field's value
         first_field = next(iter(card['fields'].values()))
         return first_field['value']
+
+    @staticmethod
+    def get_card_type(card: Dict[str, Any]) -> int:
+        """Get the card type based on queue and type fields."""
+        queue = card.get('queue', -1)
+        card_type = card.get('type', -1)
+        
+        # New card
+        if queue == 0 or card_type == 0:
+            return 0
+        # Learning card
+        elif queue == 1 or card_type == 1:
+            return 1
+        # Review card
+        elif queue == 2 or card_type == 2:
+            return 2
+        return -1  # Unknown type
 
     def get_cards(self) -> TodayReview:
         """Get all cards that need to be reviewed today, grouped by deck."""
@@ -39,11 +56,13 @@ class AnkiTodayService:
 
             for card in cards_info:
                 question = self.get_first_field_value(card)
-                if card['type'] == 0:  # New card
+                card_type = self.get_card_type(card)
+                
+                if card_type == 0:  # New card
                     new_cards.append(question)
-                elif card['type'] == 1:  # Learning card
+                elif card_type == 1:  # Learning card
                     learning_cards.append(question)
-                elif card['type'] == 2:  # Review card
+                elif card_type == 2:  # Review card
                     review_cards.append(question)
 
             if new_cards or learning_cards or review_cards:
