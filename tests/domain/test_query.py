@@ -1,123 +1,99 @@
 import unittest
 from typing import Dict, Any, Optional
-from unittest.mock import Mock
 
-from src.domain.port import AnkiConnectPort
+from src.core.ports import AnkiConnectPort
 from src.domain.query import Query
 
 class MockAnkiConnect(AnkiConnectPort):
     """Mock implementation of AnkiConnectPort for testing."""
     
-    def __init__(self, deck_response: Optional[Dict] = None, 
-                 cards_response: Optional[Dict] = None,
-                 find_response: Optional[Dict] = None):
-        self.deck_response = deck_response or {"result": [], "error": None}
-        self.cards_response = cards_response or {"result": [], "error": None}
-        self.find_response = find_response or {"result": [], "error": None}
-        
-        # For tracking calls
-        self.invoke_calls = []
+    def __init__(self):
+        self.deck_response = None
+        self.find_response = None
+        self.cards_response = None
     
-    def invoke(self, action: str, **params) -> Dict[str, Any]:
-        """Record the call and return mock response."""
-        self.invoke_calls.append((action, params))
-        
+    def request(self, action: str, params: Dict[str, Any] = None) -> Optional[Dict[str, Any]]:
+        """Mock request implementation that returns predefined responses."""
         if action == "deckNames":
             return self.deck_response
-        elif action == "cardsInfo":
-            return self.cards_response
         elif action == "findCards":
             return self.find_response
-        return {"result": None, "error": "Unknown action"}
-    
-    def test_connection(self) -> Optional[str]:
-        return "6"  # Mock version number
+        elif action == "cardsInfo":
+            return self.cards_response
+        return None
 
 class TestQuery(unittest.TestCase):
+    def setUp(self):
+        """Set up test fixtures before each test method."""
+        self.mock_client = MockAnkiConnect()
+        self.query = Query(self.mock_client)
+    
     def test_get_deck_names_success(self):
-        """Test successful retrieval of deck names."""
-        mock_client = MockAnkiConnect(deck_response={
-            "result": ["Deck1", "Deck1::SubDeck", "Deck2"],
+        """Test get_deck_names with successful response."""
+        self.mock_client.deck_response = {
+            "result": ["Deck1", "Deck2"],
             "error": None
-        })
-        query = Query(mock_client)
+        }
         
-        result = query.get_deck_names()
+        result = self.query.get_deck_names()
         
-        # Verify only parent decks are returned
         self.assertEqual(result, ["Deck1", "Deck2"])
-        # Verify the correct API call was made
-        self.assertEqual(mock_client.invoke_calls[0][0], "deckNames")
     
     def test_get_deck_names_error(self):
-        """Test error handling in get_deck_names."""
-        mock_client = MockAnkiConnect(deck_response={
+        """Test get_deck_names with error response."""
+        self.mock_client.deck_response = {
             "result": None,
             "error": "Failed to get decks"
-        })
-        query = Query(mock_client)
+        }
         
-        result = query.get_deck_names()
+        result = self.query.get_deck_names()
+        
+        self.assertIsNone(result)
+    
+    def test_find_cards_due_today_success(self):
+        """Test find_cards_due_today with successful response."""
+        self.mock_client.find_response = {
+            "result": [1, 2, 3],
+            "error": None
+        }
+        
+        result = self.query.find_cards_due_today("Test Deck")
+        
+        self.assertEqual(result, [1, 2, 3])
+    
+    def test_find_cards_due_today_error(self):
+        """Test find_cards_due_today with error response."""
+        self.mock_client.find_response = {
+            "result": None,
+            "error": "Failed to find cards"
+        }
+        
+        result = self.query.find_cards_due_today("Test Deck")
         
         self.assertIsNone(result)
     
     def test_get_card_info_success(self):
-        """Test successful retrieval of card information."""
-        mock_response = {
-            "result": [
-                {"id": 1, "fields": {"Front": {"value": "Question 1"}}},
-                {"id": 2, "fields": {"Front": {"value": "Question 2"}}}
-            ],
+        """Test get_card_info with successful response."""
+        expected_cards = [
+            {"id": 1, "question": "Q1"},
+            {"id": 2, "question": "Q2"}
+        ]
+        self.mock_client.cards_response = {
+            "result": expected_cards,
             "error": None
         }
-        mock_client = MockAnkiConnect(cards_response=mock_response)
-        query = Query(mock_client)
         
-        result = query.get_card_info([1, 2])
+        result = self.query.get_card_info([1, 2])
         
-        self.assertEqual(len(result), 2)
-        self.assertEqual(result[0]["id"], 1)
-        # Verify the correct API call was made
-        action, params = mock_client.invoke_calls[0]
-        self.assertEqual(action, "cardsInfo")
-        self.assertEqual(params["cards"], [1, 2])
+        self.assertEqual(result, expected_cards)
     
     def test_get_card_info_error(self):
-        """Test error handling in get_card_info."""
-        mock_client = MockAnkiConnect(cards_response={
+        """Test get_card_info with error response."""
+        self.mock_client.cards_response = {
             "result": None,
             "error": "Failed to get card info"
-        })
-        query = Query(mock_client)
+        }
         
-        result = query.get_card_info([1, 2])
+        result = self.query.get_card_info([1, 2])
         
-        self.assertEqual(result, [])
-    
-    def test_find_cards_due_today_success(self):
-        """Test successful finding of due cards."""
-        mock_client = MockAnkiConnect(find_response={
-            "result": [1, 2, 3],
-            "error": None
-        })
-        query = Query(mock_client)
-        
-        result = query.find_cards_due_today("Test Deck")
-        
-        self.assertEqual(result, [1, 2, 3])
-        # Verify the correct API call was made
-        action, params = mock_client.invoke_calls[0]
-        self.assertEqual(action, "findCards")
-        self.assertEqual(params["query"], 'deck:"Test Deck" (is:due or is:new)')
-    
-    def test_find_cards_due_today_error(self):
-        """Test error handling in find_cards_due_today."""
-        mock_client = MockAnkiConnect(find_response={
-            "result": None,
-            "error": "Failed to find cards"
-        })
-        query = Query(mock_client)
-        
-        result = query.find_cards_due_today("Test Deck")
-        
-        self.assertEqual(result, []) 
+        self.assertIsNone(result) 

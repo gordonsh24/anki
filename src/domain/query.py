@@ -1,36 +1,30 @@
 from typing import List, Dict, Any, Optional
-from .port import AnkiConnectPort
+from ..core.ports import AnkiConnectPort
 
 class Query:
+    """Query service for retrieving data from Anki."""
+
     def __init__(self, client: AnkiConnectPort):
         self.client = client
 
     def get_deck_names(self) -> Optional[List[str]]:
-        """Get a list of parent deck names from Anki."""
-        decks = self.client.invoke('deckNames')
-        if decks.get('error'):
-            print(f"Error: {decks['error']}")
-            return None
-        
-        # Filter out sub-decks by keeping only decks without "::"
-        parent_decks = [deck for deck in decks['result'] if "::" not in deck]
-        return parent_decks
+        """Get names of all available decks."""
+        response = self.client.request("deckNames")
+        if response and not response.get("error"):
+            return response.get("result")
+        return None
 
-    def get_card_info(self, card_ids: List[int]) -> List[Dict[str, Any]]:
+    def find_cards_due_today(self, deck_name: str) -> Optional[List[int]]:
+        """Find all cards due today in a given deck."""
+        query = f'"deck:{deck_name}" is:due'
+        response = self.client.request("findCards", {"query": query})
+        if response and not response.get("error"):
+            return response.get("result")
+        return None
+
+    def get_card_info(self, card_ids: List[int]) -> Optional[List[Dict[str, Any]]]:
         """Get detailed information about specific cards."""
-        result = self.client.invoke('cardsInfo', cards=card_ids)
-        if result.get('error'):
-            print(f"Error getting card info: {result['error']}")
-            return []
-        return result['result']
-    
-    def find_cards_due_today(self, deck: str) -> List[int]:
-        """Find all cards due today in a specific deck."""
-        query = f'deck:"{deck}" (is:due or is:new)'
-        result = self.client.invoke('findCards', query=query)
-        
-        if result.get('error'):
-            print(f"Error finding cards in {deck}: {result['error']}")
-            return []
-            
-        return result['result'] 
+        response = self.client.request("cardsInfo", {"cards": card_ids})
+        if response and not response.get("error"):
+            return response.get("result")
+        return None 
