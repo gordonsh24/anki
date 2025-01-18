@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from ..domain import AnkiTodayService
+from .services import AnkiTodayService
 from ..core.ports import ReviewPresenter
 
 class AnkiToday:

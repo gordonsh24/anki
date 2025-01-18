@@ -1,10 +1,11 @@
+"""Tests for the AnkiTodayService."""
+
 import unittest
 from typing import Dict, Any
 
 from src.core.entities import TodayReview
-from src.application.services import Query
-from src.domain.service import AnkiTodayService
-from tests.application.services.test_query import MockAnkiConnect
+from src.application.services import Query, AnkiTodayService
+from .test_query import MockAnkiConnect
 
 class TestAnkiTodayService(unittest.TestCase):
     def setUp(self):

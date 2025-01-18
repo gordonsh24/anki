@@ -1,6 +1,8 @@
+"""Service for retrieving and organizing today's Anki reviews."""
+
 from typing import Dict, Any
-from ..application.services import Query
-from ..core.entities import DeckCards, TodayReview
+from .query import Query
+from ...core.entities import DeckCards, TodayReview
 
 class AnkiTodayService:
     def __init__(self, query: Query):

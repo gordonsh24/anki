@@ -1,7 +1,6 @@
 from dependency_injector import containers, providers
 from ..integration import AnkiConnectClient
-from ..domain import AnkiTodayService
-from .services import Query
+from .services import Query, AnkiTodayService
 from .console_presenter import ConsolePresenter
 from .anki_today import AnkiToday
 
@@ -27,7 +26,6 @@ class Container(containers.DeclarativeContainer):
         client=anki_client,
     )
     
-    # Domain services
     service = providers.Singleton(
         AnkiTodayService,
         query=query,
