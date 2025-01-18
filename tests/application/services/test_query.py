@@ -1,8 +1,10 @@
+"""Tests for the Query service."""
+
 import unittest
 from typing import Dict, Any, Optional
 
 from src.core.ports import AnkiConnectPort
-from src.domain.query import Query
+from src.application.services import Query
 
 class MockAnkiConnect(AnkiConnectPort):
     """Mock implementation of AnkiConnectPort for testing."""

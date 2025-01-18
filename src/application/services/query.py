@@ -1,5 +1,7 @@
+"""Query service for retrieving data from Anki."""
+
 from typing import List, Dict, Any, Optional
-from ..core.ports import AnkiConnectPort
+from ...core.ports import AnkiConnectPort
 
 class Query:
     """Query service for retrieving data from Anki."""

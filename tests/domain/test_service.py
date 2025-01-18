@@ -2,9 +2,9 @@ import unittest
 from typing import Dict, Any
 
 from src.core.entities import TodayReview
-from src.domain.query import Query
+from src.application.services import Query
 from src.domain.service import AnkiTodayService
-from tests.domain.test_query import MockAnkiConnect
+from tests.application.services.test_query import MockAnkiConnect
 
 class TestAnkiTodayService(unittest.TestCase):
     def setUp(self):

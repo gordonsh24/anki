@@ -1,5 +1,5 @@
 from typing import Dict, Any
-from .query import Query
+from ..application.services import Query
 from ..core.entities import DeckCards, TodayReview
 
 class AnkiTodayService:
