@@ -10,9 +10,11 @@ class ConsolePresenter(ReviewPresenter):
     def present(self, review: TodayReview) -> Dict[str, Any]:
         """Present the review data in a format suitable for console display."""
         if not review.decks:
+            message = "No cards to review today!"
+            print(message)
             return {
                 "total_cards": 0,
-                "message": "No cards to review today!"
+                "message": message
             }
 
         deck_messages = []
@@ -32,7 +34,11 @@ class ConsolePresenter(ReviewPresenter):
                     deck_message += f"\n    - {card}"
             deck_messages.append(deck_message)
 
+        message = f"\nTotal cards to review today: {review.total_cards}"
+        message += "\n".join(deck_messages)
+        print(message)
+        
         return {
             "total_cards": review.total_cards,
-            "message": "\n".join(deck_messages)
+            "message": message
         } 
