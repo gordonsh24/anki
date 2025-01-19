@@ -1,9 +1,8 @@
 """Dependency injection container configuration."""
 
 from dependency_injector import containers, providers
-from ..integration import AnkiConnectClient
 from ..infrastructure import AnkiConnectCardRepository, AnkiConnectQuery
-from ..infrastructure.anki_connect import AnkiConnectService
+from ..infrastructure.anki_connect import AnkiConnectClient, AnkiConnectService
 from .services import AnkiTodayService
 from .presentation import ConsolePresenter
 from .use_cases import AnkiToday

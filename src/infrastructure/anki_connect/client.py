@@ -3,7 +3,7 @@
 import json
 import requests
 from typing import Dict, Any, Optional
-from ..infrastructure.anki_connect import AnkiConnectPort
+from .port import AnkiConnectPort
 
 
 class AnkiConnectClient(AnkiConnectPort):
