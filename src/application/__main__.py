@@ -3,10 +3,10 @@
 from .container import Container
 
 def main():
-    """Run the Anki Today application."""
+    """Run the application."""
     container = Container()
     app = container.anki_today()
-    app.get_today_reviews()
+    app.execute()
 
 if __name__ == "__main__":
     main() 

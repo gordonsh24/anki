@@ -1,8 +1,10 @@
+"""Dependency injection container configuration."""
+
 from dependency_injector import containers, providers
 from ..integration import AnkiConnectClient
 from .services import Query, AnkiTodayService
 from .presentation import ConsolePresenter
-from .anki_today import AnkiToday
+from .use_cases import AnkiToday
 
 class Container(containers.DeclarativeContainer):
     """IoC container for dependency injection."""
