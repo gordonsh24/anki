@@ -1,6 +1,7 @@
-"""AnkiConnect-specific implementations for persistence."""
+"""AnkiConnect-based persistence implementation."""
 
 from .repository import AnkiConnectCardRepository
-from .query import AnkiConnectQuery
+from .client import AnkiConnectClient
+from .mapper import AnkiCardMapper
 
-__all__ = ['AnkiConnectCardRepository', 'AnkiConnectQuery'] 
+__all__ = ['AnkiConnectCardRepository', 'AnkiConnectClient', 'AnkiCardMapper'] 

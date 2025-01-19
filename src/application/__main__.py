@@ -1,23 +1,20 @@
-"""Main entry point for the Anki Today application."""
+"""Main entry point for the application."""
 
 from .container import Container
+
 
 def main():
     """Run the application."""
     container = Container()
     
-    # Test connection to Anki
-    service = container.anki_service()
-    version = service.test_connection()
-    if version is None:
-        print("Error: Could not connect to Anki. Please make sure Anki is running and AnkiConnect is installed.")
-        return
+    # Get today's review cards
+    service = container.anki_today_service()
+    presenter = container.console_presenter()
     
-    print(f"Connected to Anki (version {version})")
-    
-    # Execute the use case
-    app = container.anki_today()
-    app.execute()
+    # Get and display the cards
+    review = service.get_cards()
+    presenter.show_review(review)
+
 
 if __name__ == "__main__":
     main() 
