@@ -2,7 +2,8 @@
 
 from dependency_injector import containers, providers
 from ..integration import AnkiConnectClient
-from .services import Query, AnkiTodayService
+from ..infrastructure import AnkiConnectCardRepository, AnkiConnectQuery
+from .services import AnkiTodayService
 from .presentation import ConsolePresenter
 from .use_cases import AnkiToday
 
@@ -22,15 +23,20 @@ class Container(containers.DeclarativeContainer):
         port=config.port,
     )
     
-    # Application services
-    query = providers.Singleton(
-        Query,
+    anki_query = providers.Singleton(
+        AnkiConnectQuery,
         client=anki_client,
     )
     
+    card_repository = providers.Singleton(
+        AnkiConnectCardRepository,
+        query=anki_query,
+    )
+    
+    # Application services
     service = providers.Singleton(
         AnkiTodayService,
-        query=query,
+        repository=card_repository,
     )
     
     # Presentation
