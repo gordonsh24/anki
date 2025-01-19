@@ -1,6 +1,8 @@
+"""Console-based presenter implementation."""
+
 from typing import Dict, Any
-from ..core.ports import ReviewPresenter
-from ..core.entities import TodayReview
+from ...core.ports import ReviewPresenter
+from ...core.entities import TodayReview
 
 class ConsolePresenter(ReviewPresenter):
     """Console implementation of the review presenter."""

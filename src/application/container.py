@@ -1,7 +1,7 @@
 from dependency_injector import containers, providers
 from ..integration import AnkiConnectClient
 from .services import Query, AnkiTodayService
-from .console_presenter import ConsolePresenter
+from .presentation import ConsolePresenter
 from .anki_today import AnkiToday
 
 class Container(containers.DeclarativeContainer):
