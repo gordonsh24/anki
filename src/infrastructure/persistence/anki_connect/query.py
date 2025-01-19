@@ -1,7 +1,7 @@
 """AnkiConnect-specific query implementation."""
 
 from typing import List, Dict, Any, Optional
-from ....core.ports import AnkiConnectPort
+from ...anki_connect import AnkiConnectPort
 
 
 class AnkiConnectQuery:

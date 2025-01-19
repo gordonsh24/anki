@@ -1,7 +1,7 @@
 """Core ports for the Anki Today application."""
 
-from .anki_connect import AnkiConnectPort
 from .presenter import ReviewPresenter
 from .card_repository import CardRepository
+from .anki_service import AnkiService
 
-__all__ = ['AnkiConnectPort', 'ReviewPresenter', 'CardRepository'] 
+__all__ = ['ReviewPresenter', 'CardRepository', 'AnkiService'] 

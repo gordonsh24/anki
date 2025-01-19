@@ -7,13 +7,13 @@ def main():
     container = Container()
     
     # Test connection to Anki
-    client = container.anki_client()
-    response = client.request("version")
-    if response is None:
+    service = container.anki_service()
+    version = service.test_connection()
+    if version is None:
         print("Error: Could not connect to Anki. Please make sure Anki is running and AnkiConnect is installed.")
         return
     
-    print(f"Connected to Anki (version {response.get('result', 'unknown')})")
+    print(f"Connected to Anki (version {version})")
     
     # Execute the use case
     app = container.anki_today()

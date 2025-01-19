@@ -1,16 +1,33 @@
+"""Client implementation for AnkiConnect protocol."""
+
 import json
 import requests
-from ..core.ports import AnkiConnectPort
 from typing import Dict, Any, Optional
+from ..infrastructure.anki_connect import AnkiConnectPort
+
 
 class AnkiConnectClient(AnkiConnectPort):
     """Client for communicating with Anki via AnkiConnect."""
 
     def __init__(self, host: str = "localhost", port: int = 8765):
+        """Initialize client with connection details.
+        
+        Args:
+            host: Hostname where Anki is running
+            port: Port number for AnkiConnect
+        """
         self.url = f"http://{host}:{port}"
 
     def request(self, action: str, params: Dict[str, Any] = None) -> Optional[Dict[str, Any]]:
-        """Send a request to AnkiConnect."""
+        """Send a request to AnkiConnect.
+        
+        Args:
+            action: The action to perform
+            params: Parameters for the action
+            
+        Returns:
+            Response from AnkiConnect if successful, None otherwise.
+        """
         if params is None:
             params = {}
 
