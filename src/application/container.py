@@ -1,24 +1,24 @@
-"""Dependency injection container configuration."""
+"""Dependency injection container for the Anki Today application."""
 
 from dependency_injector import containers, providers
 from ..infrastructure import AnkiConnectCardRepository, AnkiConnectClient
-from .services import AnkiTodayService
 from .presentation import ConsolePresenter
+from .use_cases.today_review import AnkiToday
 
 
 class Container(containers.DeclarativeContainer):
-    """Application container."""
+    """IoC container for dependency injection."""
 
     # Infrastructure
     anki_client = providers.Singleton(AnkiConnectClient)
-    card_repository = providers.Singleton(
-        AnkiConnectCardRepository,
-        client=anki_client
-    )
+    card_repository = providers.Singleton(AnkiConnectCardRepository, client=anki_client)
 
-    # Application
-    anki_today_service = providers.Singleton(
-        AnkiTodayService,
-        card_repository=card_repository
-    )
-    console_presenter = providers.Singleton(ConsolePresenter) 
+    # Presentation
+    presenter = providers.Singleton(ConsolePresenter)
+
+    # Use cases
+    anki_today = providers.Singleton(
+        AnkiToday,
+        repository=card_repository,
+        presenter=presenter
+    ) 

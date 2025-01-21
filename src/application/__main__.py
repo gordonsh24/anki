@@ -1,19 +1,15 @@
-"""Main entry point for the application."""
+"""Main entry point for the Anki Today application."""
 
 from .container import Container
 
 
-def main():
+def main() -> None:
     """Run the application."""
     container = Container()
     
-    # Get today's review cards
-    service = container.anki_today_service()
-    presenter = container.console_presenter()
-    
-    # Get and display the cards
-    review = service.get_cards()
-    presenter.show_review(review)
+    # Execute the use case
+    anki_today = container.anki_today()
+    anki_today.execute()
 
 
 if __name__ == "__main__":
