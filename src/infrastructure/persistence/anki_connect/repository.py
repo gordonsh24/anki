@@ -3,7 +3,7 @@
 from typing import List, Dict, Any
 from ....core.ports.repositories import CardRepository
 from ....core.entities import TodayReview
-from .client import AnkiConnectClient
+from ...anki_connect.client import AnkiConnectClient
 from .mapper import AnkiCardMapper
 
 
