@@ -1,7 +1,7 @@
-"""AnkiConnect integration implementation."""
+"""AnkiConnect infrastructure components."""
 
-from .port import AnkiConnectPort
-from .service import AnkiConnectService
 from .client import AnkiConnectClient
+from .repository import AnkiConnectCardRepository
+from .mapper import AnkiCardMapper
 
-__all__ = ['AnkiConnectPort', 'AnkiConnectService', 'AnkiConnectClient'] 
+__all__ = ["AnkiConnectClient", "AnkiConnectCardRepository", "AnkiCardMapper"] 

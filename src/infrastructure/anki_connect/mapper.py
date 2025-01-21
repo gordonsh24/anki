@@ -1,7 +1,8 @@
-"""Mapper for converting AnkiConnect data to domain entities."""
+"""Mapper for converting AnkiConnect responses to domain entities."""
 
-from typing import List, Dict, Any
-from ....core.entities import DeckCards, TodayReview
+from typing import Dict, Any, List
+
+from src.core.entities import DeckCards, TodayReview
 
 
 class AnkiCardMapper:

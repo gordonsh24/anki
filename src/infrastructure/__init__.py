@@ -1,6 +1,5 @@
 """Infrastructure layer for the Anki Today application."""
 
-from .anki_connect.client import AnkiConnectClient
-from .persistence.anki_connect.repository import AnkiConnectCardRepository
+from .anki_connect import AnkiConnectClient, AnkiConnectCardRepository
 
-__all__ = ['AnkiConnectCardRepository', 'AnkiConnectClient'] 
+__all__ = ["AnkiConnectClient", "AnkiConnectCardRepository"] 

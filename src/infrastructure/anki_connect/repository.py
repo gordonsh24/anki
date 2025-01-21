@@ -1,9 +1,9 @@
-"""Repository implementation for accessing Anki data via AnkiConnect."""
+"""AnkiConnect card repository implementation."""
 
 from typing import List, Dict, Any
-from ....core.ports.repositories import CardRepository
-from ....core.entities import TodayReview
-from ...anki_connect.client import AnkiConnectClient
+from src.core.ports import CardRepository
+from src.core.entities import TodayReview
+from .client import AnkiConnectClient
 from .mapper import AnkiCardMapper
 
 
