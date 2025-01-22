@@ -32,17 +32,20 @@ class AnkiConnectCardRepository(CardRepository):
         decks = []
 
         for deck_name in main_deck_names:
-            query = f"deck:{deck_name}*"  # Include cards from subdecks
+            # Only get cards from the main deck that are due today
+            query = f'deck:"{deck_name}" is:due'  # Exact match for deck name and due today
             card_ids = self._client.find_cards(query)
             
             if not card_ids:
                 continue
                 
             cards = self._client.get_cards_info(card_ids)
+            
             if not cards:
                 continue
                 
             deck_cards = self._mapper.to_deck_cards(deck_name, cards)
+            
             if deck_cards.total_cards > 0:
                 decks.append(deck_cards)
 

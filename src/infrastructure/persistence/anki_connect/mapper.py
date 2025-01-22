@@ -1,5 +1,7 @@
 """Mapper for converting AnkiConnect data to domain entities."""
 
+import time
+from datetime import datetime, timezone
 from typing import List, Dict, Any
 
 from src.core.entities import DeckCards
@@ -24,6 +26,9 @@ class AnkiCardMapper:
 
         for card in cards:
             card_type = self._get_card_type(card)
+            if not card_type:  # Skip cards that aren't due today
+                continue
+                
             question = self._get_first_field_value(card)
 
             if card_type == "new":
@@ -41,24 +46,47 @@ class AnkiCardMapper:
         )
 
     @staticmethod
-    def _get_card_type(card: Dict[str, Any]) -> str:
+    def _get_card_type(card: Dict[str, Any]) -> str | None:
         """Determine the type of card based on its queue and type fields.
+        Only returns a type for cards that are due today or in learning.
 
         Args:
             card: Card data from AnkiConnect.
 
         Returns:
-            The type of card as a string: "new", "learning", or "review".
+            The type of card as a string: "new", "learning", or "review", or None if not due today.
         """
         queue = card.get("queue", -1)
         card_type = card.get("type", 0)
+        due = card.get("due", 0)
+        odue = card.get("odue", 0)  # Original due date
 
-        if queue == 0 or card_type == 0:
+        # Learning cards (queue=1 or queue=3 for learning cards in review)
+        # For learning cards, due is a Unix timestamp in milliseconds
+        if queue in (1, 3):
+            current_timestamp = int(time.time() * 1000)  # Current timestamp in milliseconds
+            # Only show learning cards that are due now or in the past
+            if due <= current_timestamp:
+                return "learning"
+            return None
+            
+        # New cards due today (queue=0)
+        if queue == 0:
             return "new"
-        elif queue in (1, 3) or card_type == 1:
-            return "learning"
-        else:
-            return "review"
+            
+        # Review cards due today (queue=2)
+        # For review cards, the due field is the day number when the card is due
+        # relative to the collection creation date
+        if queue == 2:
+            # Get today's day number from Anki's perspective
+            # This is the number of days since the Unix epoch
+            today = int(time.time() / (24 * 60 * 60))
+            # Use odue if it's set (for filtered/rescheduled cards), otherwise use due
+            target_due = odue if odue > 0 else due
+            if target_due <= today:
+                return "review"
+            
+        return None
 
     @staticmethod
     def _get_first_field_value(card: Dict[str, Any]) -> str:
