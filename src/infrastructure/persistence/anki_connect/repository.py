@@ -27,11 +27,12 @@ class AnkiConnectCardRepository(CardRepository):
         Returns:
             TodayReview containing the decks and their cards
         """
-        deck_names = self._client.get_deck_names()
+        all_deck_names = self._client.get_deck_names()
+        main_deck_names = self._filter_main_decks(all_deck_names)
         decks = []
 
-        for deck_name in deck_names:
-            query = f"deck:{deck_name}"
+        for deck_name in main_deck_names:
+            query = f"deck:{deck_name}*"  # Include cards from subdecks
             card_ids = self._client.find_cards(query)
             
             if not card_ids:
@@ -45,4 +46,23 @@ class AnkiConnectCardRepository(CardRepository):
             if deck_cards.total_cards > 0:
                 decks.append(deck_cards)
 
-        return TodayReview(decks) 
+        return TodayReview(decks)
+
+    @staticmethod
+    def _filter_main_decks(deck_names: List[str]) -> List[str]:
+        """Filter out sub-decks and return only main deck names.
+        
+        Args:
+            deck_names: List of all deck names including sub-decks
+            
+        Returns:
+            List of main deck names
+        """
+        main_decks = set()
+        
+        for deck_name in deck_names:
+            # Get the top-level deck name (before first ::)
+            main_deck = deck_name.split("::")[0]
+            main_decks.add(main_deck)
+            
+        return sorted(main_decks) 
