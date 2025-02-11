@@ -21,19 +21,25 @@ class AnkiConnectCardRepository(CardRepository):
         self._client = client
         self._mapper = mapper
 
-    def get_today_review(self) -> TodayReview:
+    def get_today_review(self, deck_name: Optional[str] = None) -> TodayReview:
         """Get today's review cards.
         
+        Args:
+            deck_name: Optional deck name to filter by
+            
         Returns:
             TodayReview containing the decks and their cards
         """
-        all_deck_names = self._client.get_deck_names()
-        main_deck_names = self._filter_main_decks(all_deck_names)
-        decks = []
+        if deck_name:
+            deck_names = [deck_name]
+        else:
+            all_deck_names = self._client.get_deck_names()
+            deck_names = self._filter_main_decks(all_deck_names)
 
-        for deck_name in main_deck_names:
+        decks = []
+        for name in deck_names:
             # Only get cards from the main deck that are due today
-            query = f'deck:"{deck_name}" is:due'  # Exact match for deck name and due today
+            query = f'deck:"{name}" is:due'  # Exact match for deck name and due today
             card_ids = self._client.find_cards(query)
             
             if not card_ids:
@@ -44,7 +50,7 @@ class AnkiConnectCardRepository(CardRepository):
             if not cards:
                 continue
                 
-            deck_cards = self._mapper.to_deck_cards(deck_name, cards)
+            deck_cards = self._mapper.to_deck_cards(name, cards)
             
             if deck_cards.total_cards > 0:
                 decks.append(deck_cards)

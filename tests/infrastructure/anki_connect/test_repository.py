@@ -204,4 +204,26 @@ class TestAnkiConnectCardRepository(TestCase):
         self.assertEqual(len(result.decks), 0)
         self.mock_client.get_deck_names.assert_called_once()
         self.mock_client.find_cards.assert_called_once_with('deck:"Test Deck"')
-        self.mock_client.get_cards_info.assert_not_called() 
+        self.mock_client.get_cards_info.assert_not_called()
+
+    def test_get_today_review_with_specific_deck(self):
+        """Test getting today's review for a specific deck."""
+        self.mock_client.find_cards.return_value = [1, 2]
+        self.mock_client.get_cards_info.return_value = [
+            {"id": 1, "type": 0},
+            {"id": 2, "type": 1}
+        ]
+        self.mock_mapper.to_deck_cards.return_value = DeckCards(
+            deck_name="Test Deck",
+            new_cards=[Card(front="new", back="new answer")],
+            learning_cards=[Card(front="learning", back="learning answer")],
+            review_cards=[]
+        )
+
+        result = self.repository.get_today_review(deck_name="Test Deck")
+
+        self.assertIsInstance(result, TodayReview)
+        self.assertEqual(len(result.decks), 1)
+        self.mock_client.get_deck_names.assert_not_called()
+        self.mock_client.find_cards.assert_called_once_with('deck:"Test Deck" is:due')
+        self.mock_client.get_cards_info.assert_called_once_with([1, 2]) 

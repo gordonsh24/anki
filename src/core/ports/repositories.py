@@ -9,9 +9,12 @@ class CardRepository(ABC):
     """Interface for accessing card data."""
 
     @abstractmethod
-    def get_today_review(self) -> TodayReview:
+    def get_today_review(self, deck_name: Optional[str] = None) -> TodayReview:
         """Get today's review cards.
         
+        Args:
+            deck_name: Optional deck name to filter by
+            
         Returns:
             TodayReview entity containing cards grouped by deck
             

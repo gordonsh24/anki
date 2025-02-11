@@ -20,13 +20,12 @@ console = Console()
 @app.command()
 def today(
     deck: Optional[str] = typer.Option(None, help="Filter reviews by deck name"),
-    verbose: bool = typer.Option(False, "--verbose", "-v", help="Show detailed information"),
 ):
     """Show today's reviews."""
     try:
         container = Container()
         anki_today = container.anki_today()
-        anki_today.execute()
+        anki_today.execute(deck_name=deck)
     except Exception as e:
         console.print(f"[red]Error:[/red] {str(e)}")
         raise typer.Exit(code=1)

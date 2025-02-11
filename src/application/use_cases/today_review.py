@@ -1,10 +1,11 @@
-"""Today's review use case implementation."""
+"""Use case for getting today's review cards."""
 
+from typing import Optional
 from src.core.ports import CardRepository, ReviewPresenter
 
 
 class AnkiToday:
-    """Main use case for getting today's Anki review information."""
+    """Use case for getting today's review cards."""
 
     def __init__(self, repository: CardRepository, presenter: ReviewPresenter):
         """Initialize AnkiToday with required dependencies.
@@ -16,7 +17,11 @@ class AnkiToday:
         self._repository = repository
         self._presenter = presenter
 
-    def execute(self) -> None:
-        """Execute the use case to get and display today's review information."""
-        review = self._repository.get_today_review()
+    def execute(self, deck_name: Optional[str] = None) -> None:
+        """Execute the use case to get today's review cards.
+
+        Args:
+            deck_name: Optional deck name to filter by
+        """
+        review = self._repository.get_today_review(deck_name=deck_name)
         self._presenter.present(review) 
