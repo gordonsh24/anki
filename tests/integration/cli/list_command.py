@@ -74,3 +74,45 @@ def test_list_command_with_limit(mock_container, runner):
     
     # Verify history question 26 is NOT present (beyond limit)
     assert "History Question 26" not in result.output
+
+
+@pytest.mark.parametrize('mock_container', [TEST_DECKS], indirect=True)
+def test_list_command_with_deck_filter(mock_container, runner):
+    """Test the list command with deck filter parameter."""
+    # Execute command filtering for Programming deck
+    result = runner.invoke(app, ["list", "--deck", "Programming"])
+    
+    # Print output for debugging
+    print("\nCommand output:")
+    print(result.output)
+    
+    # Verify command executed successfully
+    assert result.exit_code == 0
+    
+    # Verify Programming deck content is present
+    assert "Programming" in result.output
+    assert "What is Python?" in result.output
+    assert "A programming language" in result.output
+    assert "What is a decorator?" in result.output
+    assert "A function that modifies other functions" in result.output
+    
+    # Verify History deck content is NOT present
+    assert "History" not in result.output
+    assert "Who was Julius Caesar?" not in result.output
+    assert "A Roman emperor" not in result.output
+    
+    # Test with History deck
+    result = runner.invoke(app, ["list", "--deck", "History"])
+    
+    # Verify command executed successfully
+    assert result.exit_code == 0
+    
+    # Verify History deck content is present
+    assert "History" in result.output
+    assert "Who was Julius Caesar?" in result.output
+    assert "A Roman emperor" in result.output
+    
+    # Verify Programming deck content is NOT present
+    assert "Programming" not in result.output
+    assert "What is Python?" not in result.output
+    assert "What is a decorator?" not in result.output
