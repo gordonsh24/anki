@@ -226,4 +226,34 @@ class TestAnkiConnectCardRepository(TestCase):
         self.assertEqual(len(result.decks), 1)
         self.mock_client.get_deck_names.assert_not_called()
         self.mock_client.find_cards.assert_called_once_with('deck:"Test Deck" is:due')
-        self.mock_client.get_cards_info.assert_called_once_with([1, 2]) 
+        self.mock_client.get_cards_info.assert_called_once_with([1, 2])
+
+    def test_get_all_cards_with_random_order(self):
+        """Test getting cards with random order."""
+        self.mock_client.get_deck_names.return_value = ["Test Deck"]
+        self.mock_client.find_cards.return_value = [1, 2, 3, 4, 5]
+        self.mock_client.get_cards_info.return_value = [
+            {"id": 1, "type": 0},
+            {"id": 2, "type": 1}
+        ]
+        self.mock_mapper.to_deck_cards.return_value = DeckCards(
+            deck_name="Test Deck",
+            new_cards=[Card(front="new", back="new answer")],
+            learning_cards=[Card(front="learning", back="learning answer")],
+            review_cards=[]
+        )
+
+        # Call get_all_cards multiple times with random=True
+        # The order of card_ids should be different each time
+        results = []
+        for _ in range(3):
+            result = self.repository.get_all_cards(limit=2, random=True)
+            results.append(result)
+            self.assertIsInstance(result, TodayReview)
+            self.assertEqual(len(result.decks), 1)
+
+        # Verify that get_cards_info was called with different card_id combinations
+        calls = self.mock_client.get_cards_info.call_args_list
+        card_id_sets = [set(call[0][0]) for call in calls]
+        # At least one pair of sets should be different (due to randomization)
+        self.assertTrue(any(s1 != s2 for s1, s2 in zip(card_id_sets, card_id_sets[1:]))) 

@@ -1,6 +1,7 @@
 """Repository implementation using AnkiConnect."""
 
 from typing import List, Optional
+import random as random_module
 
 from src.core.ports import CardRepository
 from src.core.entities import DeckCards, TodayReview
@@ -57,13 +58,14 @@ class AnkiConnectCardRepository(CardRepository):
 
         return TodayReview(decks)
 
-    def get_all_cards(self, limit: int = 20, offset: int = 0, deck_name: Optional[str] = None) -> TodayReview:
+    def get_all_cards(self, limit: int = 20, offset: int = 0, deck_name: Optional[str] = None, random: bool = False) -> TodayReview:
         """Get all cards, optionally filtered by deck.
 
         Args:
             limit: Maximum number of cards per deck to fetch
             offset: Number of cards to skip
             deck_name: Optional deck name to filter by
+            random: Whether to randomize the order of cards
 
         Returns:
             A TodayReview entity containing the cards
@@ -83,6 +85,10 @@ class AnkiConnectCardRepository(CardRepository):
             card_ids = self._client.find_cards(f'deck:"{name}"')
             if not card_ids:
                 continue
+
+            # Randomize if requested
+            if random:
+                random_module.shuffle(card_ids)
 
             # Apply limit and offset
             card_ids = card_ids[offset:offset + limit]

@@ -32,7 +32,7 @@ def test_execute_with_default_parameters(use_case, repository, presenter):
 
     use_case.execute()
 
-    repository.get_all_cards.assert_called_once_with(limit=20, offset=0, deck_name=None)
+    repository.get_all_cards.assert_called_once_with(limit=20, offset=0, deck_name=None, random=False)
     presenter.present.assert_called_once_with(review)
 
 
@@ -41,7 +41,7 @@ def test_execute_with_custom_parameters(use_case, repository, presenter):
     review = TodayReview([])
     repository.get_all_cards.return_value = review
 
-    use_case.execute(limit=10, offset=5, deck="Test Deck")
+    use_case.execute(limit=10, offset=5, deck="Test Deck", random=True)
 
-    repository.get_all_cards.assert_called_once_with(limit=10, offset=5, deck_name="Test Deck")
+    repository.get_all_cards.assert_called_once_with(limit=10, offset=5, deck_name="Test Deck", random=True)
     presenter.present.assert_called_once_with(review) 

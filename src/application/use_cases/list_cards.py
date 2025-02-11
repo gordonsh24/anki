@@ -18,13 +18,14 @@ class AnkiList:
         self._repository = repository
         self._presenter = presenter
 
-    def execute(self, limit: int = 20, offset: int = 0, deck: Optional[str] = None) -> None:
+    def execute(self, limit: int = 20, offset: int = 0, deck: Optional[str] = None, random: bool = False) -> None:
         """Execute the use case to list all cards.
 
         Args:
             limit: Maximum number of cards per deck to fetch
             offset: Number of cards to skip
             deck: Optional deck name to filter by
+            random: Whether to randomize the order of cards
         """
-        review = self._repository.get_all_cards(limit=limit, offset=offset, deck_name=deck)
+        review = self._repository.get_all_cards(limit=limit, offset=offset, deck_name=deck, random=random)
         self._presenter.present(review) 
