@@ -7,7 +7,7 @@ from src.application.containers import Container
 
 
 @pytest.fixture
-def mock_container(test_decks_fixture):
+def mock_container(request):
     """Mock the container to use test configuration.
     
     This fixture provides a mocked Container with AnkiConnectClient
@@ -15,11 +15,14 @@ def mock_container(test_decks_fixture):
     of CLI commands.
     
     Args:
-        test_decks_fixture: Fixture providing test deck data
+        request: pytest request object to get the test_decks parameter
         
     Returns:
         A mocked Container instance with test configuration
     """
+    # Get test_decks from the requesting test, defaulting to None
+    test_decks = getattr(request, "param", None)
+    
     with patch('src.cli.Container', autospec=True) as mock_container_class:
         # Create a real container instance
         container = Container()
@@ -29,12 +32,14 @@ def mock_container(test_decks_fixture):
             mock_client = mock_client_class.return_value
             
             # Mock deck names
-            mock_client.get_deck_names.return_value = [deck["name"] for deck in test_decks_fixture]
+            mock_client.get_deck_names.return_value = [deck["name"] for deck in test_decks] if test_decks else []
             
             # Mock find_cards to return card IDs for each deck
             def mock_find_cards(query):
+                if not test_decks:
+                    return []
                 deck_name = query.split('"')[1]  # Extract deck name from query
-                for deck in test_decks_fixture:
+                for deck in test_decks:
                     if deck["name"] == deck_name:
                         return [card["id"] for card in deck["cards"]]
                 return []
@@ -42,7 +47,9 @@ def mock_container(test_decks_fixture):
 
             # Mock get_cards_info to return card details
             def mock_get_cards_info(card_ids):
-                all_cards = [card for deck in test_decks_fixture for card in deck["cards"]]
+                if not test_decks:
+                    return []
+                all_cards = [card for deck in test_decks for card in deck["cards"]]
                 return [card for card in all_cards if card["id"] in card_ids]
             mock_client.get_cards_info.side_effect = mock_get_cards_info
             

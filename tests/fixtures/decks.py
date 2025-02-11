@@ -38,4 +38,36 @@ TEST_DECKS = [
             }
         ]
     }
+]
+
+# Fixture with many cards to test pagination
+TEST_DECKS_MANY_CARDS = [
+    {
+        "name": "Programming",
+        "cards": [
+            {
+                "id": i,
+                "fields": {
+                    "Front": {"value": f"Programming Question {i}"},
+                    "Back": {"value": f"Programming Answer {i}"}
+                },
+                "type": 0,
+                "queue": 0
+            } for i in range(1, 16)  # 15 cards
+        ]
+    },
+    {
+        "name": "History",
+        "cards": [
+            {
+                "id": i,
+                "fields": {
+                    "Front": {"value": f"History Question {i}"},
+                    "Back": {"value": f"History Answer {i}"}
+                },
+                "type": 0,
+                "queue": 0
+            } for i in range(16, 31)  # 15 more cards
+        ]
+    }
 ] 
