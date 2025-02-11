@@ -32,6 +32,25 @@ Additional options:
 
 The command will show all cards that need to be reviewed today, organized by deck and card type (new, learning, and review cards).
 
+## Tests
+
+To run tests, make sure you have installed the package in development mode as described in the Installation section.
+
+### Running all tests
+```bash
+pytest
+```
+
+### Running only unit tests
+```bash
+pytest tests/core tests/application tests/infrastructure
+```
+
+### Running only integration tests
+```bash
+pytest tests/integration
+```
+
 ## How it works
 
 The `anki` command is created during installation through Python's entry points system. When you run `pip install -e .`, it creates an executable script that runs the CLI application. You don't need to run any Python files directly. 
