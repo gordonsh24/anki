@@ -82,6 +82,86 @@ def test_to_deck_cards_mixed_types(mapper):
     ]
 
 
+def test_to_deck_cards_polish_english_fields(mapper):
+    """Test converting cards with Polish-English specific fields."""
+    cards = [
+        {
+            "queue": 0,
+            "type": 0,
+            "fields": {
+                "Polish word": {"value": "marynarz"},
+                "Word translation": {"value": "mariners"}
+            }
+        },
+        {
+            "queue": 1,
+            "type": 1,
+            "fields": {
+                "Polish word": {"value": "wypatroszyć"},
+                "Word translation": {"value": "eviscerate"}
+            }
+        }
+    ]
+    
+    result = mapper.to_deck_cards("English language", cards)
+    assert result.deck_name == "English language"
+    assert [(card.front, card.back) for card in result.new_cards] == [
+        ("marynarz", "mariners")
+    ]
+    assert [(card.front, card.back) for card in result.learning_cards] == [
+        ("wypatroszyć", "eviscerate")
+    ]
+
+
+def test_to_deck_cards_fallback_to_standard_fields(mapper):
+    """Test that mapper falls back to standard fields when Polish-English fields are not present."""
+    cards = [
+        {
+            "queue": 0,
+            "type": 0,
+            "fields": {
+                "Front": {"value": "What is Python?"},
+                "Back": {"value": "A programming language"}
+            }
+        }
+    ]
+    
+    result = mapper.to_deck_cards("Programming", cards)
+    assert result.deck_name == "Programming"
+    assert [(card.front, card.back) for card in result.new_cards] == [
+        ("What is Python?", "A programming language")
+    ]
+
+
+def test_to_deck_cards_mixed_field_types(mapper):
+    """Test handling cards with mix of Polish-English and standard fields."""
+    cards = [
+        {
+            "queue": 0,
+            "type": 0,
+            "fields": {
+                "Polish word": {"value": "marynarz"},
+                "Word translation": {"value": "mariners"}
+            }
+        },
+        {
+            "queue": 0,
+            "type": 0,
+            "fields": {
+                "Front": {"value": "What is Python?"},
+                "Back": {"value": "A programming language"}
+            }
+        }
+    ]
+    
+    result = mapper.to_deck_cards("Mixed Deck", cards)
+    assert result.deck_name == "Mixed Deck"
+    assert [(card.front, card.back) for card in result.new_cards] == [
+        ("marynarz", "mariners"),
+        ("What is Python?", "A programming language")
+    ]
+
+
 def test_to_deck_cards_with_missing_fields(mapper):
     """Test converting cards with missing or empty fields."""
     cards = [

@@ -70,4 +70,35 @@ TEST_DECKS_MANY_CARDS = [
             } for i in range(16, 31)  # 15 more cards
         ]
     }
+]
+
+# Fixture with Polish-English specific fields
+TEST_POLISH_ENGLISH_DECK = [
+    {
+        "name": "English language",
+        "cards": [
+            {
+                "id": 1,
+                "fields": {
+                    "Polish word": {"value": "marynarz"},
+                    "Word translation": {"value": "mariners"},
+                    "Polish example": {"value": "Przykład z marynarzem"},
+                    "Example translation": {"value": "Example with mariners"}
+                },
+                "type": 0,
+                "queue": 0  # New card
+            },
+            {
+                "id": 2,
+                "fields": {
+                    "Polish word": {"value": "wypatroszyć"},
+                    "Word translation": {"value": "eviscerate"},
+                    "Polish example": {"value": "Przykład z wypatroszeniem"},
+                    "Example translation": {"value": "Example with evisceration"}
+                },
+                "type": 1,
+                "queue": 1  # Learning card
+            }
+        ]
+    }
 ] 

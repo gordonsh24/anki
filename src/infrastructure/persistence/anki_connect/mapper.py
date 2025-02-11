@@ -29,8 +29,15 @@ class AnkiCardMapper:
             if not card_type:  # Skip cards that aren't due today
                 continue
                 
-            front = self._get_field_value(card, "Front")
-            back = self._get_field_value(card, "Back")
+            # Try Polish-English specific field names first
+            front = self._get_field_value(card, "Polish word")
+            back = self._get_field_value(card, "Word translation")
+            
+            # If Polish-English fields are empty, try standard field names
+            if not front or not back:
+                front = self._get_field_value(card, "Front")
+                back = self._get_field_value(card, "Back")
+            
             card_entity = Card(front=front, back=back)
 
             if card_type == "new":
@@ -76,14 +83,11 @@ class AnkiCardMapper:
         if queue == 0:
             return "new"
             
-        # Review cards due today (queue=2)
         # For review cards, the due field is the day number when the card is due
         # relative to the collection creation date
         if queue == 2:
-            # Get today's day number from Anki's perspective
-            # This is the number of days since the Unix epoch
-            today = int(time.time() / (24 * 60 * 60))
-            # Use odue if it's set (for filtered/rescheduled cards), otherwise use due
+            # Get today's day number
+            today = int(datetime.now(timezone.utc).timestamp() / 86400)
             target_due = odue if odue > 0 else due
             if target_due <= today:
                 return "review"
@@ -95,15 +99,12 @@ class AnkiCardMapper:
         """Get the value of a specific field from a card.
 
         Args:
-            card: Card data from AnkiConnect.
-            field_name: Name of the field to get.
+            card: Card data from AnkiConnect
+            field_name: Name of the field to get
 
         Returns:
-            The value of the field as a string.
+            The field value as a string, or empty string if not found
         """
         fields = card.get("fields", {})
-        if not fields:
-            return ""
-
         field = fields.get(field_name, {})
         return field.get("value", "") 

@@ -5,7 +5,7 @@ import pytest
 from typer.testing import CliRunner
 
 from src.cli import app
-from tests.fixtures.decks import TEST_DECKS, TEST_DECKS_MANY_CARDS
+from tests.fixtures.decks import TEST_DECKS, TEST_DECKS_MANY_CARDS, TEST_POLISH_ENGLISH_DECK
 from tests.integration.utils import mock_container  # Updated import path
 
 
@@ -116,3 +116,45 @@ def test_list_command_with_deck_filter(mock_container, runner):
     assert "Programming" not in result.output
     assert "What is Python?" not in result.output
     assert "What is a decorator?" not in result.output
+
+
+@pytest.mark.parametrize('mock_container', [TEST_POLISH_ENGLISH_DECK], indirect=True)
+def test_list_command_polish_english_fields(mock_container, runner):
+    """Test the list command with Polish-English specific fields."""
+    # Execute command
+    result = runner.invoke(app, ["list"])
+    
+    # Print output for debugging
+    print("\nCommand output:")
+    print(result.output)
+    
+    # Verify command executed successfully
+    assert result.exit_code == 0
+    
+    # Verify deck name is present
+    assert "English language" in result.output
+    
+    # Verify Polish words are used as front
+    assert "marynarz" in result.output
+    assert "wypatroszyć" in result.output
+    
+    # Verify English translations are used as back
+    assert "mariners" in result.output
+    assert "eviscerate" in result.output
+    
+    # Verify cards are categorized correctly
+    assert "New cards" in result.output
+    assert "Learning cards" in result.output
+    
+    # Execute command with specific deck filter
+    result = runner.invoke(app, ["list", "--deck", "English language"])
+    
+    # Verify command executed successfully
+    assert result.exit_code == 0
+    
+    # Verify only English language deck content is present
+    assert "English language" in result.output
+    assert "marynarz" in result.output
+    assert "mariners" in result.output
+    assert "wypatroszyć" in result.output
+    assert "eviscerate" in result.output
