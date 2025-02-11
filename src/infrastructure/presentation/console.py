@@ -28,12 +28,15 @@ class ConsolePresenter(ReviewPresenter):
             if deck.new_cards:
                 print(f"  New cards ({len(deck.new_cards)}):")
                 for card in deck.new_cards:
-                    print(f"    - {card.front}")
+                    print(f"    - Front: {card.front}")
+                    print(f"      Back:  {card.back}")
             if deck.learning_cards:
                 print(f"  Learning cards ({len(deck.learning_cards)}):")
                 for card in deck.learning_cards:
-                    print(f"    - {card.front}")
+                    print(f"    - Front: {card.front}")
+                    print(f"      Back:  {card.back}")
             if deck.review_cards:
                 print(f"  Review cards ({len(deck.review_cards)}):")
                 for card in deck.review_cards:
-                    print(f"    - {card.front}") 
+                    print(f"    - Front: {card.front}")
+                    print(f"      Back:  {card.back}") 

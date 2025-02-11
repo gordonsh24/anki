@@ -62,9 +62,9 @@ class TestAnkiConnectCardRepository(TestCase):
         ]
         self.mock_mapper.to_deck_cards.return_value = DeckCards(
             deck_name="Test Deck",
-            new_cards=[Card(front="new")],
-            learning_cards=[Card(front="learning")],
-            review_cards=[Card(front="review")]
+            new_cards=[Card(front="new", back="new answer")],
+            learning_cards=[Card(front="learning", back="learning answer")],
+            review_cards=[Card(front="review", back="review answer")]
         )
 
         result = self.repository.get_today_review()
@@ -94,14 +94,14 @@ class TestAnkiConnectCardRepository(TestCase):
         # Set up mapper to return decks with cards
         programming_deck = DeckCards(
             deck_name="Programming",
-            new_cards=[Card(front="Python basics")],
+            new_cards=[Card(front="Python basics", back="Python is a programming language")],
             learning_cards=[],
             review_cards=[]
         )
         languages_deck = DeckCards(
             deck_name="Languages",
             new_cards=[],
-            learning_cards=[Card(front="English grammar")],
+            learning_cards=[Card(front="English grammar", back="Rules of English language")],
             review_cards=[]
         )
         self.mock_mapper.to_deck_cards.side_effect = [programming_deck, languages_deck]
@@ -121,5 +121,4 @@ class TestAnkiConnectCardRepository(TestCase):
         self.assertCountEqual(expected_calls, actual_calls)
         # Verify the deck names in the result are main decks
         deck_names = [deck.deck_name for deck in result.decks]
-        self.assertTrue(all("::" not in name for name in deck_names)) 
         self.assertTrue(all("::" not in name for name in deck_names)) 

@@ -16,9 +16,9 @@ class TestDeckCards(unittest.TestCase):
         """Test total_cards property with some cards."""
         deck = DeckCards(
             deck_name="Test Deck",
-            new_cards=[Card(front="card1"), Card(front="card2")],
-            learning_cards=[Card(front="card3")],
-            review_cards=[Card(front="card4"), Card(front="card5"), Card(front="card6")]
+            new_cards=[Card(front="card1", back="answer1"), Card(front="card2", back="answer2")],
+            learning_cards=[Card(front="card3", back="answer3")],
+            review_cards=[Card(front="card4", back="answer4"), Card(front="card5", back="answer5"), Card(front="card6", back="answer6")]
         )
         self.assertEqual(deck.total_cards, 6)
     

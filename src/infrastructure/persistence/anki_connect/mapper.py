@@ -29,8 +29,9 @@ class AnkiCardMapper:
             if not card_type:  # Skip cards that aren't due today
                 continue
                 
-            front = self._get_first_field_value(card)
-            card_entity = Card(front=front)
+            front = self._get_field_value(card, "Front")
+            back = self._get_field_value(card, "Back")
+            card_entity = Card(front=front, back=back)
 
             if card_type == "new":
                 new_cards.append(card_entity)
@@ -90,18 +91,19 @@ class AnkiCardMapper:
         return None
 
     @staticmethod
-    def _get_first_field_value(card: Dict[str, Any]) -> str:
-        """Get the value of the first field from a card.
+    def _get_field_value(card: Dict[str, Any], field_name: str) -> str:
+        """Get the value of a specific field from a card.
 
         Args:
             card: Card data from AnkiConnect.
+            field_name: Name of the field to get.
 
         Returns:
-            The value of the first field as a string.
+            The value of the field as a string.
         """
         fields = card.get("fields", {})
         if not fields:
             return ""
 
-        first_field = next(iter(fields.values()), {})
-        return first_field.get("value", "") 
+        field = fields.get(field_name, {})
+        return field.get("value", "") 

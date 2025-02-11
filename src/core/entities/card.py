@@ -7,4 +7,5 @@ from dataclasses import dataclass
 @dataclass
 class Card:
     """Represents a single Anki flashcard."""
-    front: str 
+    front: str
+    back: str 
