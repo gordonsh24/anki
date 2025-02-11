@@ -3,7 +3,7 @@
 import pytest
 
 from src.infrastructure.persistence.anki_connect.mapper import AnkiCardMapper
-from src.core.entities import DeckCards
+from src.core.entities import DeckCards, Card
 
 
 @pytest.fixture
@@ -54,9 +54,9 @@ def test_to_deck_cards_mixed_types(mapper):
     
     result = mapper.to_deck_cards("Test Deck", cards)
     assert result.deck_name == "Test Deck"
-    assert result.new_cards == ["new card 1", "new card 2"]
-    assert result.learning_cards == ["learning card 1", "learning card 2"]
-    assert result.review_cards == ["review card"]
+    assert [card.front for card in result.new_cards] == ["new card 1", "new card 2"]
+    assert [card.front for card in result.learning_cards] == ["learning card 1", "learning card 2"]
+    assert [card.front for card in result.review_cards] == ["review card"]
 
 
 def test_to_deck_cards_with_missing_fields(mapper):
@@ -75,6 +75,6 @@ def test_to_deck_cards_with_missing_fields(mapper):
     
     result = mapper.to_deck_cards("Test Deck", cards)
     assert result.deck_name == "Test Deck"
-    assert result.new_cards == [""]
-    assert result.learning_cards == [""]
+    assert [card.front for card in result.new_cards] == [""]
+    assert [card.front for card in result.learning_cards] == [""]
     assert result.review_cards == [] 

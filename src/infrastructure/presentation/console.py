@@ -1,8 +1,13 @@
 """Console presenter implementation for displaying review information."""
 
-from src.core.ports import ReviewPresenter
-from src.core.entities import TodayReview
+from rich import print
+from rich.console import Console
+from rich.table import Table
 
+from src.core.ports import ReviewPresenter
+from src.core.entities import TodayReview, Card
+
+console = Console()
 
 class ConsolePresenter(ReviewPresenter):
     """Presents review information in the console."""
@@ -23,12 +28,12 @@ class ConsolePresenter(ReviewPresenter):
             if deck.new_cards:
                 print(f"  New cards ({len(deck.new_cards)}):")
                 for card in deck.new_cards:
-                    print(f"    - {card}")
+                    print(f"    - {card.front}")
             if deck.learning_cards:
                 print(f"  Learning cards ({len(deck.learning_cards)}):")
                 for card in deck.learning_cards:
-                    print(f"    - {card}")
+                    print(f"    - {card.front}")
             if deck.review_cards:
                 print(f"  Review cards ({len(deck.review_cards)}):")
                 for card in deck.review_cards:
-                    print(f"    - {card}") 
+                    print(f"    - {card.front}") 

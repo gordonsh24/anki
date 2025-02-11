@@ -1,5 +1,5 @@
 import unittest
-from src.core.entities import DeckCards
+from src.core.entities import DeckCards, Card
 
 class TestDeckCards(unittest.TestCase):
     def test_total_cards_empty(self):
@@ -16,9 +16,9 @@ class TestDeckCards(unittest.TestCase):
         """Test total_cards property with some cards."""
         deck = DeckCards(
             deck_name="Test Deck",
-            new_cards=["card1", "card2"],
-            learning_cards=["card3"],
-            review_cards=["card4", "card5", "card6"]
+            new_cards=[Card(front="card1"), Card(front="card2")],
+            learning_cards=[Card(front="card3")],
+            review_cards=[Card(front="card4"), Card(front="card5"), Card(front="card6")]
         )
         self.assertEqual(deck.total_cards, 6)
     

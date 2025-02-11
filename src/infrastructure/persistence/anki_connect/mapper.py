@@ -4,7 +4,7 @@ import time
 from datetime import datetime, timezone
 from typing import List, Dict, Any
 
-from src.core.entities import DeckCards
+from src.core.entities import DeckCards, Card
 
 
 class AnkiCardMapper:
@@ -29,14 +29,15 @@ class AnkiCardMapper:
             if not card_type:  # Skip cards that aren't due today
                 continue
                 
-            question = self._get_first_field_value(card)
+            front = self._get_first_field_value(card)
+            card_entity = Card(front=front)
 
             if card_type == "new":
-                new_cards.append(question)
+                new_cards.append(card_entity)
             elif card_type == "learning":
-                learning_cards.append(question)
+                learning_cards.append(card_entity)
             elif card_type == "review":
-                review_cards.append(question)
+                review_cards.append(card_entity)
 
         return DeckCards(
             deck_name=deck_name,
