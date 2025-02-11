@@ -32,6 +32,22 @@ def today(
         raise typer.Exit(code=1)
 
 
+@app.command()
+def list(
+    limit: int = typer.Option(20, help="Limit of cards per deck to fetch"),
+    offset: int = typer.Option(0, help="Number of cards to skip"),
+    deck: Optional[str] = typer.Option(None, help="Get cards only from given deck"),
+):
+    """List all cards in Anki."""
+    try:
+        container = Container()
+        anki_list = container.anki_list()
+        anki_list.execute(limit=limit, offset=offset, deck=deck)
+    except Exception as e:
+        console.print(f"[red]Error:[/red] {str(e)}")
+        raise typer.Exit(code=1)
+
+
 @app.callback()
 def callback():
     """CLI tool for interacting with Anki."""

@@ -5,6 +5,7 @@ from dependency_injector import containers, providers
 from src.infrastructure import AnkiConnectClient, AnkiConnectCardRepository, ConsolePresenter
 from src.infrastructure.persistence.anki_connect.mapper import AnkiCardMapper
 from src.application.use_cases.today_review import AnkiToday
+from src.application.use_cases.list_cards import AnkiList
 
 
 class Container(containers.DeclarativeContainer):
@@ -23,6 +24,11 @@ class Container(containers.DeclarativeContainer):
     # Use cases
     anki_today = providers.Singleton(
         AnkiToday,
+        repository=repository,
+        presenter=presenter
+    )
+    anki_list = providers.Singleton(
+        AnkiList,
         repository=repository,
         presenter=presenter
     ) 

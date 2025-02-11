@@ -121,4 +121,87 @@ class TestAnkiConnectCardRepository(TestCase):
         self.assertCountEqual(expected_calls, actual_calls)
         # Verify the deck names in the result are main decks
         deck_names = [deck.deck_name for deck in result.decks]
-        self.assertTrue(all("::" not in name for name in deck_names)) 
+        self.assertTrue(all("::" not in name for name in deck_names))
+
+    def test_get_all_cards_with_default_parameters(self):
+        """Test getting all cards with default parameters."""
+        self.mock_client.get_deck_names.return_value = ["Test Deck"]
+        self.mock_client.find_cards.return_value = [1, 2, 3]
+        self.mock_client.get_cards_info.return_value = [
+            {"id": 1, "type": 0},
+            {"id": 2, "type": 1},
+            {"id": 3, "type": 2}
+        ]
+        self.mock_mapper.to_deck_cards.return_value = DeckCards(
+            deck_name="Test Deck",
+            new_cards=[Card(front="new", back="new answer")],
+            learning_cards=[Card(front="learning", back="learning answer")],
+            review_cards=[Card(front="review", back="review answer")]
+        )
+
+        result = self.repository.get_all_cards()
+
+        self.assertIsInstance(result, TodayReview)
+        self.assertEqual(len(result.decks), 1)
+        self.mock_client.get_deck_names.assert_called_once()
+        self.mock_client.find_cards.assert_called_once_with('deck:"Test Deck"')
+        self.mock_client.get_cards_info.assert_called_once_with([1, 2, 3])
+
+    def test_get_all_cards_with_specific_deck(self):
+        """Test getting cards from a specific deck."""
+        self.mock_client.find_cards.return_value = [1, 2]
+        self.mock_client.get_cards_info.return_value = [
+            {"id": 1, "type": 0},
+            {"id": 2, "type": 1}
+        ]
+        self.mock_mapper.to_deck_cards.return_value = DeckCards(
+            deck_name="Test Deck",
+            new_cards=[Card(front="new", back="new answer")],
+            learning_cards=[Card(front="learning", back="learning answer")],
+            review_cards=[]
+        )
+
+        result = self.repository.get_all_cards(deck_name="Test Deck")
+
+        self.assertIsInstance(result, TodayReview)
+        self.assertEqual(len(result.decks), 1)
+        self.mock_client.get_deck_names.assert_not_called()
+        self.mock_client.find_cards.assert_called_once_with('deck:"Test Deck"')
+        self.mock_client.get_cards_info.assert_called_once_with([1, 2])
+
+    def test_get_all_cards_with_limit_and_offset(self):
+        """Test getting cards with limit and offset."""
+        self.mock_client.get_deck_names.return_value = ["Test Deck"]
+        self.mock_client.find_cards.return_value = [1, 2, 3, 4, 5]
+        self.mock_client.get_cards_info.return_value = [
+            {"id": 2, "type": 0},
+            {"id": 3, "type": 1}
+        ]
+        self.mock_mapper.to_deck_cards.return_value = DeckCards(
+            deck_name="Test Deck",
+            new_cards=[Card(front="new", back="new answer")],
+            learning_cards=[Card(front="learning", back="learning answer")],
+            review_cards=[]
+        )
+
+        result = self.repository.get_all_cards(limit=2, offset=1)
+
+        self.assertIsInstance(result, TodayReview)
+        self.assertEqual(len(result.decks), 1)
+        self.mock_client.get_deck_names.assert_called_once()
+        self.mock_client.find_cards.assert_called_once_with('deck:"Test Deck"')
+        # Verify that we're getting info for cards after applying limit and offset
+        self.mock_client.get_cards_info.assert_called_once_with([2, 3])
+
+    def test_get_all_cards_empty_deck(self):
+        """Test getting cards when deck is empty."""
+        self.mock_client.get_deck_names.return_value = ["Test Deck"]
+        self.mock_client.find_cards.return_value = []
+
+        result = self.repository.get_all_cards()
+
+        self.assertIsInstance(result, TodayReview)
+        self.assertEqual(len(result.decks), 0)
+        self.mock_client.get_deck_names.assert_called_once()
+        self.mock_client.find_cards.assert_called_once_with('deck:"Test Deck"')
+        self.mock_client.get_cards_info.assert_not_called() 

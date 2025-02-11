@@ -1,6 +1,7 @@
 """Repository interfaces for the core domain."""
 
 from abc import ABC, abstractmethod
+from typing import Optional
 from ..entities import TodayReview
 
 
@@ -16,5 +17,19 @@ class CardRepository(ABC):
             
         Raises:
             RuntimeError: If there's an error accessing the data
+        """
+        pass
+
+    @abstractmethod
+    def get_all_cards(self, limit: int = 20, offset: int = 0, deck_name: Optional[str] = None) -> TodayReview:
+        """Get all cards, optionally filtered by deck.
+
+        Args:
+            limit: Maximum number of cards per deck to fetch
+            offset: Number of cards to skip
+            deck_name: Optional deck name to filter by
+
+        Returns:
+            A TodayReview entity containing the cards
         """
         pass 
